@@ -39,3 +39,25 @@ export function formatPrice(cents: number): string {
     minimumFractionDigits: 2,
   }).format(cents / 100);
 }
+
+const OWNER_BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+export function resolveOwnerAssetUrl(src: string): string {
+  if (
+    !src ||
+    src.startsWith("data:") ||
+    src.startsWith("http://") ||
+    src.startsWith("https://")
+  ) {
+    return src;
+  }
+  if (
+    OWNER_BASE_PATH &&
+    src.startsWith("/") &&
+    !src.startsWith(`${OWNER_BASE_PATH}/`)
+  ) {
+    return `${OWNER_BASE_PATH}${src}`;
+  }
+  return src;
+}
+

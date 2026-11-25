@@ -21,7 +21,11 @@ import {
   Trash2,
 } from "lucide-react";
 import { STARTER_SEED_ITEMS } from "@/data/starter-seed";
-import { firestoreDb, formatPrice } from "@/lib/firebase";
+import {
+  firestoreDb,
+  formatPrice,
+  resolveOwnerAssetUrl,
+} from "@/lib/firebase";
 import { compressSaladImageFile } from "@/lib/image-upload";
 import {
   MenuItemFormSchema,
@@ -340,7 +344,9 @@ export function MenuManager() {
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={draft.imageUrl || "/images/salad-item-1.jpg"}
+                  src={resolveOwnerAssetUrl(
+                    draft.imageUrl || "/images/salad-item-1.jpg",
+                  )}
                   alt="Salad preview"
                   className="h-full w-full object-cover"
                 />
@@ -673,7 +679,7 @@ export function MenuManager() {
               <div className="relative aspect-[16/10] w-full bg-[var(--bg-elevated)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={item.imageUrl}
+                  src={resolveOwnerAssetUrl(item.imageUrl)}
                   alt={item.title}
                   className={`h-full w-full object-cover ${
                     !item.isAvailable ? "opacity-55 grayscale-[30%]" : ""

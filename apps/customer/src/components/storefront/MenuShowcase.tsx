@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Check, Clock, Flame, Minus, Plus } from "lucide-react";
-import { formatPrice } from "@/lib/format";
+import { formatPrice, resolveAssetUrl } from "@/lib/format";
 import type { MenuItem } from "@/types/domain";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -66,7 +66,7 @@ export function MenuShowcase({
               >
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-[var(--bg-elevated)]">
                   <Image
-                    src={item.imageUrl}
+                    src={resolveAssetUrl(item.imageUrl)}
                     alt={`${item.itemNumber} — ${item.title}`}
                     fill
                     unoptimized

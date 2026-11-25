@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock, Sparkles, Sprout } from "lucide-react";
+import { resolveAssetUrl } from "@/lib/format";
 import type { StoreSettings } from "@/types/domain";
 import { Badge } from "@/components/ui/Badge";
 import { Container } from "@/components/ui/Container";
@@ -92,7 +93,7 @@ export function HeroSection({
             <div className="relative overflow-hidden rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-2.5 shadow-[var(--shadow-card)]">
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[var(--bg-elevated)]">
                 <Image
-                  src="/images/hero-salad.jpg"
+                  src={resolveAssetUrl("/images/hero-salad.jpg")}
                   alt="Freshly prepared artisan salad bowl from Healthy Foods with greens, avocado, cherry tomatoes, and citrus vinaigrette"
                   fill
                   priority

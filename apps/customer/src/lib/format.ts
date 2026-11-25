@@ -50,3 +50,25 @@ export function generateOrderCode(): string {
   }
   return code;
 }
+
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+/**
+ * Prepends Next.js `basePath` to root-relative static assets (e.g., `/images/...`)
+ * while leaving external URLs and `data:` URIs untouched.
+ */
+export function resolveAssetUrl(src: string): string {
+  if (
+    !src ||
+    src.startsWith("data:") ||
+    src.startsWith("http://") ||
+    src.startsWith("https://")
+  ) {
+    return src;
+  }
+  if (BASE_PATH && src.startsWith("/") && !src.startsWith(`${BASE_PATH}/`)) {
+    return `${BASE_PATH}${src}`;
+  }
+  return src;
+}
+

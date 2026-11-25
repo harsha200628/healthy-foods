@@ -1,21 +1,8 @@
 import type { Metadata } from "next";
-import { Lora, Plus_Jakarta_Sans } from "next/font/google";
+import "@fontsource-variable/lora";
+import "@fontsource-variable/plus-jakarta-sans";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import "./globals.css";
-
-const lora = Lora({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-heading",
-  display: "swap",
-});
-
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-body",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Healthy Foods | Fresh Daily Salads",
@@ -41,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${lora.variable} ${plusJakarta.variable}`}>
+    <html lang="en">
       <body className="min-h-screen antialiased selection:bg-[var(--bg-accent-soft)] selection:text-[var(--text-primary)]">
         <AuthProvider>{children}</AuthProvider>
       </body>
