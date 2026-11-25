@@ -1,0 +1,34 @@
+{
+  "name": "healthy-foods-platform",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:customer": "npm --workspace=apps/customer run dev",
+    "dev:owner": "npm --workspace=apps/owner run dev",
+    "build": "npm --workspace=apps/customer run build && npm --workspace=apps/owner run build",
+    "typecheck": "npm --workspace=apps/customer run typecheck && npm --workspace=apps/owner run typecheck",
+    "lint": "npm --workspace=apps/customer run lint && npm --workspace=apps/owner run lint"
+  },
+  "dependencies": {
+    "firebase": "^11.9.1",
+    "lucide-react": "^0.511.0",
+    "next": "^15.5.12",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@tailwindcss/postcss": "^4.1.7",
+    "@types/node": "^20.17.50",
+    "@types/react": "^19.1.4",
+    "@types/react-dom": "^19.1.5",
+    "eslint": "^9.26.0",
+    "eslint-config-next": "^15.5.12",
+    "tailwindcss": "^4.1.7",
+    "typescript": "^5.8.3"
+  }
+}

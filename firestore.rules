@@ -1,0 +1,347 @@
+rules_version = '2';
+
+// ============================================================================
+// Healthy Foods — Cloud Firestore Security Rules
+// ============================================================================
+// Prototype security rules for the two-website Healthy Foods salad platform
+// (Customer storefront + Owner portal). Review and test with the Firebase
+// Emulator Suite before deploying to a broad production audience.
+// ============================================================================
+// Assumed Data Model
+// ============================================================================
+//
+// Collection: menuItems/{itemId}
+//   Publicly readable menu catalog; writable only by verified Owner.
+//   Fields:
+//     - itemNumber: string (required, 1..30)
+//     - title: string (required, 2..100)
+//     - tagline: string (required, 0..140)
+//     - description: string (required, 4..800)
+//     - ingredients: list (required, size <= 25)
+//     - dressing: string (required, 0..140)
+//     - priceCents: int (required, 1..500000)
+//     - calories: int (required, 0..5000)
+//     - proteinGrams: int (required, 0..500)
+//     - prepMinutes: int (required, 1..240)
+//     - dietaryTags: list (required, size <= 10)
+//     - imageUrl: string (required, 1..500000)
+//     - isAvailable: bool (required)
+//     - sortOrder: int (required, 0..1000)
+//     - createdAt: timestamp (required, immutable on update)
+//     - updatedAt: timestamp (required)
+//
+// Collection: storeSettings/{docId}
+//   Publicly readable storefront metadata; writable only by verified Owner.
+//   Fields:
+//     - brandName: string (required, 1..100)
+//     - pickupLocation: string (required, 1..200)
+//     - serviceHours: string (required, 1..160)
+//     - contactEmail: string (required, 0..120)
+//     - contactHandle: string (required, 0..80)
+//     - isKitchenOpen: bool (required)
+//     - updatedAt: timestamp (required)
+//
+// Collection: users/{uid}
+//   Private customer profile (PII: name, phoneNumber). Readable by self or Owner.
+//   Creatable and updatable only by self; deletion disabled.
+//   Fields:
+//     - name: string (required, 2..80)
+//     - phoneNumber: string (required, 7..25, immutable on update)
+//     - createdAt: timestamp (required, immutable on update)
+//     - updatedAt: timestamp (required)
+//
+// Subcollection: users/{uid}/addresses/{addressId}
+//   Private saved delivery addresses (PII). Accessible only by owning uid.
+//   Fields:
+//     - label: string (required, 1..40)
+//     - recipientName: string (required, 2..80)
+//     - phone: string (required, 7..25)
+//     - addressLine1: string (required, 4..160)
+//     - addressLine2: string (required, 0..160)
+//     - landmark: string (required, 0..120)
+//     - city: string (required, 2..80)
+//     - postalCode: string (required, 2..20)
+//     - deliveryNotes: string (required, 0..240)
+//     - mapsUrl: string (required, 0..300)
+//     - isDefault: bool (required)
+//     - createdAt: timestamp (required, immutable on update)
+//     - updatedAt: timestamp (required)
+//
+// Collection: orders/{orderId}
+//   Customer orders (PII). Readable by owning customer or Owner.
+//   Creatable by owning customer with initial status 'pending'.
+//   Updatable only by Owner (status, ownerNote, updatedAt only). Deletion disabled.
+//   Fields:
+//     - orderCode: string (required, 4..20)
+//     - customerUid: string (required, matches request.auth.uid on create)
+//     - customerName: string (required, 2..80)
+//     - customerPhone: string (required, 7..25)
+//     - deliveryAddress: map (required, exact 10 string keys)
+//     - pickupWindow: string (required, 2..60)
+//     - items: list (required, size 1..20)
+//     - totalCents: int (required, 1..2000000)
+//     - status: string (required, 'pending' on create; enum on owner update)
+//     - ownerNote: string (required, 0..300)
+//     - createdAt: timestamp (required)
+//     - updatedAt: timestamp (required)
+//
+// ============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ========================================================================
+    // Helper Functions
+    // ========================================================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner() {
+      return isSignedIn()
+        && ('email' in request.auth.token)
+        && request.auth.token.email == 'gcreddyprofessional@gmail.com'
+        && ('email_verified' in request.auth.token)
+        && request.auth.token.email_verified == true;
+    }
+
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isNonEmptyString(val, minLen, maxLen) {
+      return val is string && val.size() >= minLen && val.size() <= maxLen;
+    }
+
+    function isOptionalString(val, maxLen) {
+      return val is string && val.size() <= maxLen;
+    }
+
+    function hasExactFields(data, fields) {
+      return data.keys().hasOnly(fields) && data.keys().hasAll(fields);
+    }
+
+    // ========================================================================
+    // Domain Validators
+    // ========================================================================
+
+    function isValidMenuItem(data) {
+      let requiredFields = [
+        'itemNumber',
+        'title',
+        'tagline',
+        'description',
+        'ingredients',
+        'dressing',
+        'priceCents',
+        'calories',
+        'proteinGrams',
+        'prepMinutes',
+        'dietaryTags',
+        'imageUrl',
+        'isAvailable',
+        'sortOrder',
+        'createdAt',
+        'updatedAt'
+      ];
+      return hasExactFields(data, requiredFields)
+        && isNonEmptyString(data.itemNumber, 1, 30)
+        && isNonEmptyString(data.title, 2, 100)
+        && isOptionalString(data.tagline, 140)
+        && isNonEmptyString(data.description, 4, 800)
+        && data.ingredients is list
+        && data.ingredients.size() <= 25
+        && isOptionalString(data.dressing, 140)
+        && data.priceCents is int && data.priceCents > 0 && data.priceCents <= 500000
+        && data.calories is int && data.calories >= 0 && data.calories <= 5000
+        && data.proteinGrams is int && data.proteinGrams >= 0 && data.proteinGrams <= 500
+        && data.prepMinutes is int && data.prepMinutes >= 1 && data.prepMinutes <= 240
+        && data.dietaryTags is list
+        && data.dietaryTags.size() <= 10
+        && isNonEmptyString(data.imageUrl, 1, 500000)
+        && data.isAvailable is bool
+        && data.sortOrder is int && data.sortOrder >= 0 && data.sortOrder <= 1000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidStoreSettings(data) {
+      let requiredFields = [
+        'brandName',
+        'pickupLocation',
+        'serviceHours',
+        'contactEmail',
+        'contactHandle',
+        'isKitchenOpen',
+        'updatedAt'
+      ];
+      return hasExactFields(data, requiredFields)
+        && isNonEmptyString(data.brandName, 1, 100)
+        && isNonEmptyString(data.pickupLocation, 1, 200)
+        && isNonEmptyString(data.serviceHours, 1, 160)
+        && isOptionalString(data.contactEmail, 120)
+        && isOptionalString(data.contactHandle, 80)
+        && data.isKitchenOpen is bool
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidUser(data) {
+      let requiredFields = ['name', 'phoneNumber', 'createdAt', 'updatedAt'];
+      return hasExactFields(data, requiredFields)
+        && isNonEmptyString(data.name, 2, 80)
+        && isNonEmptyString(data.phoneNumber, 7, 25)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidAddressFields(data) {
+      return isNonEmptyString(data.label, 1, 40)
+        && isNonEmptyString(data.recipientName, 2, 80)
+        && isNonEmptyString(data.phone, 7, 25)
+        && isNonEmptyString(data.addressLine1, 4, 160)
+        && isOptionalString(data.addressLine2, 160)
+        && isOptionalString(data.landmark, 120)
+        && isNonEmptyString(data.city, 2, 80)
+        && isNonEmptyString(data.postalCode, 2, 20)
+        && isOptionalString(data.deliveryNotes, 240)
+        && isOptionalString(data.mapsUrl, 300);
+    }
+
+    function isValidAddress(data) {
+      let requiredFields = [
+        'label',
+        'recipientName',
+        'phone',
+        'addressLine1',
+        'addressLine2',
+        'landmark',
+        'city',
+        'postalCode',
+        'deliveryNotes',
+        'mapsUrl',
+        'isDefault',
+        'createdAt',
+        'updatedAt'
+      ];
+      return hasExactFields(data, requiredFields)
+        && isValidAddressFields(data)
+        && data.isDefault is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidDeliveryAddress(addr) {
+      let requiredKeys = [
+        'label',
+        'recipientName',
+        'phone',
+        'addressLine1',
+        'addressLine2',
+        'landmark',
+        'city',
+        'postalCode',
+        'deliveryNotes',
+        'mapsUrl'
+      ];
+      return addr is map
+        && hasExactFields(addr, requiredKeys)
+        && isValidAddressFields(addr);
+    }
+
+    function isValidOrder(data) {
+      let requiredFields = [
+        'orderCode',
+        'customerUid',
+        'customerName',
+        'customerPhone',
+        'deliveryAddress',
+        'pickupWindow',
+        'items',
+        'totalCents',
+        'status',
+        'ownerNote',
+        'createdAt',
+        'updatedAt'
+      ];
+      return hasExactFields(data, requiredFields)
+        && isNonEmptyString(data.orderCode, 4, 20)
+        && isNonEmptyString(data.customerUid, 1, 128)
+        && isNonEmptyString(data.customerName, 2, 80)
+        && isNonEmptyString(data.customerPhone, 7, 25)
+        && isValidDeliveryAddress(data.deliveryAddress)
+        && isNonEmptyString(data.pickupWindow, 2, 60)
+        && data.items is list
+        && data.items.size() >= 1
+        && data.items.size() <= 20
+        && data.totalCents is int && data.totalCents > 0 && data.totalCents <= 2000000
+        && data.status in ['pending', 'accepted', 'declined', 'delivered']
+        && isOptionalString(data.ownerNote, 300)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidOrderOwnerUpdate(newData, oldData) {
+      return isValidOrder(newData)
+        && newData.diff(oldData).affectedKeys().hasOnly(['status', 'ownerNote', 'updatedAt'])
+        && newData.status in ['pending', 'accepted', 'declined', 'delivered']
+        && isOptionalString(newData.ownerNote, 300)
+        && newData.updatedAt is timestamp;
+    }
+
+    // ========================================================================
+    // Collection Rules
+    // ========================================================================
+
+    match /menuItems/{itemId} {
+      allow read: if true;
+      allow create: if isOwner() && isValidMenuItem(request.resource.data);
+      allow update: if isOwner()
+        && isValidMenuItem(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isOwner();
+    }
+
+    match /storeSettings/{docId} {
+      allow read: if true;
+      allow create: if isOwner() && isValidStoreSettings(request.resource.data);
+      allow update: if isOwner() && isValidStoreSettings(request.resource.data);
+      allow delete: if isOwner();
+    }
+
+    match /users/{uid} {
+      allow read: if isSelf(uid) || isOwner();
+      allow create: if isSelf(uid) && isValidUser(request.resource.data);
+      allow update: if isSelf(uid)
+        && isValidUser(request.resource.data)
+        && request.resource.data.phoneNumber == resource.data.phoneNumber
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if false;
+
+      match /addresses/{addressId} {
+        allow read, delete: if isSelf(uid);
+        allow create: if isSelf(uid) && isValidAddress(request.resource.data);
+        allow update: if isSelf(uid)
+          && isValidAddress(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt;
+      }
+    }
+
+    match /orders/{orderId} {
+      allow read: if isSignedIn()
+        && (resource.data.customerUid == request.auth.uid || isOwner());
+      allow create: if isSignedIn()
+        && request.resource.data.customerUid == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && isValidOrder(request.resource.data);
+      allow update: if isOwner()
+        && isValidOrderOwnerUpdate(request.resource.data, resource.data);
+      allow delete: if false;
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

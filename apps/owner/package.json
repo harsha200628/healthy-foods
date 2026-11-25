@@ -1,0 +1,12 @@
+{
+  "name": "@healthy-foods/owner",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack --port 3101",
+    "build": "next build",
+    "start": "next start --port 3101",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  }
+}

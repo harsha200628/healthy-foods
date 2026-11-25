@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Item 3 Avocado Citrus Crunch Salad">
+  <defs>
+    <radialGradient id="stoneBg3" cx="50%" cy="45%" r="70%">
+      <stop offset="0%" stop-color="#f5efe6"/>
+      <stop offset="100%" stop-color="#e8dfd1"/>
+    </radialGradient>
+    <radialGradient id="bowlRim3" cx="45%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="82%" stop-color="#f3efe8"/>
+      <stop offset="100%" stop-color="#dcd5c9"/>
+    </radialGradient>
+    <filter id="bowlShadow3" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#1f2d22" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="800" height="600" fill="url(#stoneBg3)"/>
+  <circle cx="400" cy="300" r="228" fill="url(#bowlRim3)" filter="url(#bowlShadow3)"/>
+  <circle cx="400" cy="300" r="196" fill="#ebe5da"/>
+  <!-- Baby spinach & greens -->
+  <g fill="#2e6b3e">
+    <ellipse cx="320" cy="240" rx="52" ry="34" transform="rotate(-24 320 240)"/>
+    <ellipse cx="470" cy="245" rx="54" ry="36" transform="rotate(22 470 245)"/>
+    <ellipse cx="330" cy="370" rx="58" ry="35" transform="rotate(18 330 370)"/>
+    <ellipse cx="475" cy="365" rx="50" ry="34" transform="rotate(-28 475 365)"/>
+  </g>
+  <g fill="#3f874f">
+    <ellipse cx="395" cy="215" rx="46" ry="30" transform="rotate(8 395 215)"/>
+    <ellipse cx="290" cy="305" rx="48" ry="30" transform="rotate(-12 290 305)"/>
+    <ellipse cx="505" cy="310" rx="46" ry="30" transform="rotate(14 505 310)"/>
+    <ellipse cx="400" cy="395" rx="52" ry="30" transform="rotate(-6 400 395)"/>
+  </g>
+  <!-- Avocado fan slices -->
+  <g transform="translate(305 260) rotate(-18)">
+    <path d="M0,44 C8,14 26,0 44,0 C50,18 42,46 22,58 Z" fill="#84b84a" stroke="#537d2b" stroke-width="2"/>
+    <path d="M22,52 C32,20 52,6 70,8 C74,26 64,54 44,66 Z" fill="#99c95d" stroke="#537d2b" stroke-width="2"/>
+    <path d="M46,60 C56,28 76,14 94,18 C96,36 84,64 64,74 Z" fill="#add670" stroke="#537d2b" stroke-width="2"/>
+  </g>
+  <!-- Ruby grapefruit segments -->
+  <g>
+    <path d="M430,225 A46,46 0 0,1 495,260 L452,282 Z" fill="#e1584b" stroke="#f7b7a3" stroke-width="3"/>
+    <path d="M465,305 A46,46 0 0,1 495,365 L445,355 Z" fill="#d9483b" stroke="#f7b7a3" stroke-width="3"/>
+    <path d="M355,345 A46,46 0 0,1 395,405 L348,392 Z" fill="#e1584b" stroke="#f7b7a3" stroke-width="3"/>
+  </g>
+  <!-- Shaved fennel & toasted almonds -->
+  <g fill="#f7f2e7" stroke="#d8ceb9" stroke-width="1.5">
+    <path d="M360,295 Q395,275 430,298 Q398,312 360,295 Z"/>
+    <path d="M375,320 Q412,302 448,325 Q412,338 375,320 Z"/>
+  </g>
+  <g fill="#d7a86e">
+    <ellipse cx="385" cy="255" rx="9" ry="4.5" transform="rotate(28 385 255)"/>
+    <ellipse cx="425" cy="340" rx="9" ry="4.5" transform="rotate(-22 425 340)"/>
+    <ellipse cx="332" cy="336" rx="9" ry="4.5" transform="rotate(42 332 336)"/>
+    <ellipse cx="468" cy="292" rx="9" ry="4.5" transform="rotate(-35 468 292)"/>
+    <ellipse cx="408" cy="378" rx="9" ry="4.5" transform="rotate(14 408 378)"/>
+  </g>
+  <!-- Microgreens & poppyseeds -->
+  <g stroke="#68b05d" stroke-width="2.2" fill="none" stroke-linecap="round">
+    <path d="M385,295 Q395,280 405,286"/>
+    <path d="M402,310 Q416,294 426,304"/>
+    <path d="M356,312 Q366,298 378,306"/>
+  </g>
+  <g fill="#2b2b2b" opacity="0.75">
+    <circle cx="372" cy="285" r="2"/>
+    <circle cx="412" cy="272" r="2"/>
+    <circle cx="436" cy="316" r="2"/>
+    <circle cx="384" cy="348" r="2"/>
+    <circle cx="348" cy="296" r="2"/>
+  </g>
+</svg>
