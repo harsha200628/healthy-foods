@@ -6,9 +6,9 @@ import { Container } from "@/components/ui/Container";
 const PILLARS = [
   {
     step: "01",
-    title: "Verify Once, Sign In Fast",
+    title: "Quick Account, Easy Reorder",
     description:
-      "Create your account once with Mobile + OTP + Password, save your delivery address, and log in anytime with just your password.",
+      "Create your account in seconds with your mobile number and password, save your delivery address, and log in anytime.",
     icon: ShieldCheck,
   },
   {

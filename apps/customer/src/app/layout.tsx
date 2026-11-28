@@ -14,7 +14,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "Healthy Foods | Fresh Daily Salads",
   description:
-    "Healthy Foods crafts fresh small-batch salads daily. Create an account with mobile OTP + password, save your delivery addresses, and order online.",
+    "Healthy Foods crafts fresh small-batch salads daily. Create an account with your mobile number and password, save your delivery addresses, and order online.",
   appleWebApp: {
     capable: true,
     title: "Healthy Foods",

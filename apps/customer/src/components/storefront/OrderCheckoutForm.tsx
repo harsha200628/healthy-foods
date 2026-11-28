@@ -342,22 +342,22 @@ export function OrderCheckoutForm({
                 Sign in to use saved delivery addresses &amp; place your order
               </h3>
               <p className="mt-1 text-xs leading-relaxed text-[var(--text-secondary)]">
-                New customers verify their mobile number once with OTP and set a
-                password. Returning customers sign in instantly with mobile +
-                password. Your selected bowls stay saved in your bag!
+                New customers create an account with their mobile number and
+                password and save a delivery address. Returning customers sign in
+                in one tap. Your selected bowls stay saved in your bag!
               </p>
               <div className="mt-4 flex flex-wrap gap-2.5">
                 <Link
                   href="/login"
                   className="inline-flex min-h-10 items-center justify-center rounded-full bg-[var(--accent-primary)] px-5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
                 >
-                  Sign In with Password
+                  Sign In
                 </Link>
                 <Link
                   href="/signup"
                   className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--border-strong)] bg-[var(--bg-surface)] px-5 text-sm font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
                 >
-                  Create Account (Mobile + OTP)
+                  Create Account
                 </Link>
               </div>
             </div>
