@@ -15,13 +15,14 @@ import { OWNER_ALLOWED_EMAIL } from "@/lib/firebase";
 import { useOwnerAuth } from "@/components/providers/OwnerAuthProvider";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Live Orders", icon: ClipboardList },
-  { href: "/menu", label: "Menu & Photos", icon: UtensilsCrossed },
-  { href: "/settings", label: "Kitchen Settings", icon: Settings },
+  { href: "/", label: "Orders", desktopLabel: "Live Orders", icon: ClipboardList },
+  { href: "/menu", label: "Menu", desktopLabel: "Menu & Photos", icon: UtensilsCrossed },
+  { href: "/settings", label: "Settings", desktopLabel: "Kitchen Settings", icon: Settings },
 ] as const;
 
 export function OwnerGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const normalized = pathname.replace(/\/+$/, "") || "/";
   const { user, loading, authError, signInWithGoogle, logout } = useOwnerAuth();
 
   if (loading) {
@@ -36,8 +37,8 @@ export function OwnerGate({ children }: { children: ReactNode }) {
 
   if (!user) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--bg-canvas)] px-4 py-12">
-        <div className="w-full max-w-md rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-8 shadow-[var(--shadow-card)]">
+      <main className="flex min-h-[100dvh] items-center justify-center bg-[var(--bg-canvas)] px-4 py-8">
+        <div className="w-full max-w-md rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-[var(--shadow-card)] sm:p-8">
           <div className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--bg-accent-soft)] text-[var(--accent-primary)]">
               <Leaf className="h-5 w-5" aria-hidden="true" />
@@ -57,14 +58,14 @@ export function OwnerGate({ children }: { children: ReactNode }) {
             Google Sign-In Only
           </div>
 
-          <h1 className="mt-4 font-serif text-3xl font-semibold text-[var(--text-primary)]">
+          <h1 className="mt-4 font-serif text-2xl font-semibold text-[var(--text-primary)] sm:text-3xl">
             Owner Kitchen Sign In
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
             Manage your salad menu, upload photos, view customer delivery
             locations, and accept, decline, or mark orders delivered. Restricted
             strictly to{" "}
-            <span className="font-semibold text-[var(--text-primary)]">
+            <span className="break-words font-semibold text-[var(--text-primary)]">
               {OWNER_ALLOWED_EMAIL}
             </span>
             .
@@ -100,55 +101,56 @@ export function OwnerGate({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-canvas)]">
-      <header className="sticky top-0 z-40 border-b border-[var(--border-subtle)] bg-[var(--bg-canvas)]/95 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--bg-accent-soft)] text-[var(--accent-primary)]">
+    <div className="min-h-screen bg-[var(--bg-canvas)] pb-24 md:pb-8">
+      <header className="glass-bar sticky top-0 z-40 border-b border-[var(--border-subtle)]">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6 md:h-16 lg:px-8">
+          <Link href="/" className="flex min-w-0 items-center gap-2.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--bg-accent-soft)] text-[var(--accent-primary)]">
               <Leaf className="h-4 w-4" aria-hidden="true" />
             </span>
-            <div>
-              <p className="font-serif text-base font-bold leading-tight text-[var(--text-primary)]">
+            <div className="min-w-0">
+              <p className="truncate font-serif text-base font-bold leading-tight text-[var(--text-primary)]">
                 Healthy Foods
               </p>
-              <p className="text-[11px] font-semibold text-[var(--accent-primary)]">
-                Owner Kitchen Portal
+              <p className="text-[10px] font-semibold text-[var(--accent-primary)] sm:text-[11px]">
+                Kitchen Console
               </p>
             </div>
-          </div>
+          </Link>
 
           <nav
-            aria-label="Owner navigation"
-            className="flex items-center gap-1.5"
+            aria-label="Owner desktop navigation"
+            className="hidden items-center gap-1.5 md:flex"
           >
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
-              const active = pathname === item.href;
+              const active = normalized === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`inline-flex min-h-10 items-center gap-1.5 rounded-full px-3.5 text-xs font-semibold transition-colors sm:text-sm ${
+                  className={`inline-flex min-h-10 items-center gap-1.5 rounded-full px-4 text-sm font-semibold transition-colors ${
                     active
                       ? "bg-[var(--accent-primary)] text-white"
                       : "text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"
                   }`}
                 >
                   <Icon className="h-4 w-4" aria-hidden="true" />
-                  <span>{item.label}</span>
+                  <span>{item.desktopLabel}</span>
                 </Link>
               );
             })}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <span className="hidden rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-1 text-xs font-medium text-[var(--text-secondary)] lg:inline-block">
               {user.email}
             </span>
             <button
               type="button"
               onClick={() => void logout()}
-              className="inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-[var(--bg-surface)] px-3.5 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
+              aria-label="Sign out"
+              className="inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-[var(--bg-surface)] px-3 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
             >
               <LogOut className="h-3.5 w-3.5" aria-hidden="true" />
               <span>Sign Out</span>
@@ -157,9 +159,42 @@ export function OwnerGate({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 md:py-8 lg:px-8">
         {children}
       </main>
+
+      {/* Native-feeling mobile bottom tab bar */}
+      <nav
+        aria-label="Owner mobile navigation"
+        className="glass-bar pb-safe fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] md:hidden"
+      >
+        <div className="mx-auto grid max-w-md grid-cols-3 px-2 pt-1.5">
+          {NAV_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const active = normalized === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-2xl px-1 py-1 text-[11px] font-semibold transition-colors active:scale-95 ${
+                  active
+                    ? "text-[var(--accent-primary)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                }`}
+              >
+                <span
+                  className={`flex h-7 w-12 items-center justify-center rounded-full transition-colors ${
+                    active ? "bg-[var(--bg-accent-soft)]" : ""
+                  }`}
+                >
+                  <Icon className="h-[19px] w-[19px]" aria-hidden="true" />
+                </span>
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }

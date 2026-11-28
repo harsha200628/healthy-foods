@@ -1,13 +1,25 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/lora";
 import "@fontsource-variable/plus-jakarta-sans";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import "./globals.css";
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#faf9f5",
+};
+
 export const metadata: Metadata = {
   title: "Healthy Foods | Fresh Daily Salads",
   description:
     "Healthy Foods crafts fresh small-batch salads daily. Create an account with mobile OTP + password, save your delivery addresses, and order online.",
+  appleWebApp: {
+    capable: true,
+    title: "Healthy Foods",
+    statusBarStyle: "default",
+  },
   openGraph: {
     title: "Healthy Foods — Fresh Daily Salads",
     description:

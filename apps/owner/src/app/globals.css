@@ -23,11 +23,50 @@
   --font-serif: "Lora Variable", Georgia, serif;
 }
 
+html {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   background-color: var(--bg-canvas);
   color: var(--text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: contain;
+}
+
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+.glass-bar {
+  background-color: rgba(247, 248, 245, 0.94);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.pb-safe {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
 }
 
 :focus-visible {

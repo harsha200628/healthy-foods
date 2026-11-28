@@ -12,6 +12,7 @@ import {
 import { AddressInputSchema, type AddressInput } from "@/types/domain";
 import { useCustomerAuth } from "@/components/providers/AuthProvider";
 import { AddressFormFields } from "@/components/addresses/AddressFormFields";
+import { MobileTabBar } from "@/components/storefront/MobileTabBar";
 import { Navbar } from "@/components/storefront/Navbar";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -76,9 +77,9 @@ export default function AddressesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-canvas)]">
+    <div className="min-h-screen bg-[var(--bg-canvas)] pb-24 md:pb-12">
       <Navbar />
-      <main id="main-content" className="py-10 sm:py-14">
+      <main id="main-content" className="py-6 sm:py-14">
         <Container className="max-w-3xl">
           <Link
             href="/"
@@ -255,6 +256,7 @@ export default function AddressesPage() {
           )}
         </Container>
       </main>
+      <MobileTabBar />
     </div>
   );
 }

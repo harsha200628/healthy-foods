@@ -17,6 +17,7 @@ import {
   toE164Phone,
 } from "@/lib/firebase";
 import { PasswordLoginSchema } from "@/types/domain";
+import { MobileTabBar } from "@/components/storefront/MobileTabBar";
 import { Navbar } from "@/components/storefront/Navbar";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -166,9 +167,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-canvas)]">
+    <div className="min-h-screen bg-[var(--bg-canvas)] pb-24 md:pb-12">
       <Navbar />
-      <main id="main-content" className="py-12 sm:py-16">
+      <main id="main-content" className="py-6 sm:py-14">
         <Container className="max-w-lg">
           <Link
             href="/"
@@ -441,6 +442,7 @@ export default function LoginPage() {
           </div>
         </Container>
       </main>
+      <MobileTabBar />
     </div>
   );
 }

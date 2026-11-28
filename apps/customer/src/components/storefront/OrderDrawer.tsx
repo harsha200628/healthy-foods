@@ -47,19 +47,25 @@ export function OrderDrawer({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex justify-end"
+      className="fixed inset-0 z-50 flex items-end justify-center md:items-stretch md:justify-end"
       role="dialog"
       aria-modal="true"
       aria-labelledby="drawer-heading"
     >
       <div
-        className="fixed inset-0 bg-[#112619]/40 backdrop-blur-[2px]"
+        className="fixed inset-0 bg-[#112619]/45 backdrop-blur-[3px]"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      <div className="relative z-10 flex h-full w-full max-w-lg flex-col border-l border-[var(--border-subtle)] bg-[var(--bg-canvas)] shadow-2xl">
-        <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-6 py-4">
+      {/* Mobile: iOS bottom sheet; Desktop: Right-side drawer */}
+      <div className="pb-safe relative z-10 flex max-h-[90dvh] w-full flex-col rounded-t-[28px] border-t border-[var(--border-subtle)] bg-[var(--bg-canvas)] shadow-2xl md:h-full md:max-h-full md:max-w-lg md:rounded-none md:border-l md:border-t-0">
+        {/* Mobile sheet drag handle */}
+        <div className="flex justify-center pt-2.5 md:hidden" aria-hidden="true">
+          <span className="h-1 w-10 rounded-full bg-[var(--border-strong)]" />
+        </div>
+
+        <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-5 py-3.5 sm:px-6 sm:py-4">
           <div>
             <h2
               id="drawer-heading"
@@ -81,7 +87,7 @@ export function OrderDrawer({
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-5">
+        <div className="flex-1 overflow-y-auto px-5 py-4 sm:px-6 sm:py-5">
           <OrderCheckoutForm
             menu={menu}
             isKitchenOpen={isKitchenOpen}

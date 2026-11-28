@@ -28,6 +28,7 @@ html {
   scroll-behavior: smooth;
   background-color: var(--bg-canvas);
   color: var(--text-primary);
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -36,11 +37,45 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overscroll-behavior-y: contain;
+}
+
+/* Prevent iOS Safari zoom on input focus */
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+button,
+a {
+  touch-action: manipulation;
 }
 
 :focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
+}
+
+.glass-bar {
+  background-color: rgba(250, 249, 245, 0.94);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.pb-safe {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
 }
 
 .card-lift {
@@ -50,18 +85,20 @@ body {
     border-color 240ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.card-lift:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-elevated);
-  border-color: var(--border-strong);
+@media (hover: hover) {
+  .card-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-elevated);
+    border-color: var(--border-strong);
+  }
+
+  .card-lift:hover .img-zoom {
+    transform: scale(1.035);
+  }
 }
 
 .img-zoom {
   transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.card-lift:hover .img-zoom {
-  transform: scale(1.035);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -75,10 +112,5 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-
-  .card-lift:hover,
-  .card-lift:hover .img-zoom {
-    transform: none;
   }
 }

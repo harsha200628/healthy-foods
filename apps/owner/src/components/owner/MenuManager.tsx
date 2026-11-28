@@ -282,7 +282,7 @@ export function MenuManager() {
             setEditingId("new");
             setFormError(null);
           }}
-          className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full bg-[var(--accent-primary)] px-5 text-sm font-semibold text-white shadow-sm hover:bg-[var(--accent-primary-hover)]"
+          className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-[var(--accent-primary)] px-5 text-sm font-semibold text-white shadow-sm hover:bg-[var(--accent-primary-hover)] sm:w-auto"
         >
           <Plus className="h-4 w-4" aria-hidden="true" />
           <span>Add New Salad Item</span>
