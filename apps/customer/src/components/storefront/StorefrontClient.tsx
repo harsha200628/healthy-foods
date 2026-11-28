@@ -10,15 +10,12 @@ import {
 import { firestoreDb } from "@/lib/firebase";
 import { computeCartSummary, countCartItems, formatPrice } from "@/lib/format";
 import type { MenuItem, StoreSettings } from "@/types/domain";
-import { Footer } from "@/components/storefront/Footer";
 import { HeroSection } from "@/components/storefront/HeroSection";
-import { HowItWorks } from "@/components/storefront/HowItWorks";
 import { ItemDetailSheet } from "@/components/storefront/ItemDetailSheet";
 import { MenuShowcase } from "@/components/storefront/MenuShowcase";
 import { MobileTabBar } from "@/components/storefront/MobileTabBar";
 import { Navbar } from "@/components/storefront/Navbar";
 import { OrderDrawer } from "@/components/storefront/OrderDrawer";
-import { OrderSection } from "@/components/storefront/OrderSection";
 
 const BAG_STORAGE_KEY = "hf_customer_bag_v1";
 
@@ -161,7 +158,7 @@ export function StorefrontClient() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col pb-24 md:pb-0">
+    <div className="flex min-h-screen flex-col pb-28 md:pb-8">
       <Navbar
         totalItems={totalItems}
         onOpenBag={() => setIsDrawerOpen(true)}
@@ -179,18 +176,7 @@ export function StorefrontClient() {
           onDecrement={handleDecrement}
           onSelectItem={setSelectedItem}
         />
-        <OrderSection
-          menu={menu}
-          isKitchenOpen={settings.isKitchenOpen}
-          quantities={quantities}
-          onIncrement={handleIncrement}
-          onDecrement={handleDecrement}
-          onClearCart={handleClearCart}
-        />
-        <HowItWorks settings={settings} />
       </main>
-
-      <Footer settings={settings} />
 
       {/* Sticky mobile floating cart pill above bottom tab bar */}
       {totalItems > 0 && !isDrawerOpen && !selectedItem && (

@@ -95,6 +95,7 @@ export function OrderDrawer({
             onIncrement={onIncrement}
             onDecrement={onDecrement}
             onClearCart={onClearCart}
+            onClose={onClose}
             idPrefix="drawer"
           />
         </div>

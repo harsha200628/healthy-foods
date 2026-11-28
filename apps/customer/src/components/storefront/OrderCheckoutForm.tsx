@@ -9,6 +9,7 @@ import {
   MapPin,
   Minus,
   Plus,
+  ShoppingBag,
   Trash2,
 } from "lucide-react";
 import {
@@ -38,6 +39,7 @@ interface OrderCheckoutFormProps {
   onIncrement: (id: string) => void;
   onDecrement: (id: string) => void;
   onClearCart: () => void;
+  onClose?: () => void;
   idPrefix?: string;
 }
 
@@ -62,6 +64,7 @@ export function OrderCheckoutForm({
   onIncrement,
   onDecrement,
   onClearCart,
+  onClose,
   idPrefix = "checkout",
 }: OrderCheckoutFormProps) {
   const reactId = useId();
@@ -242,77 +245,99 @@ export function OrderCheckoutForm({
     );
   }
 
+  if (lines.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-6 py-10 text-center">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--bg-elevated)] text-[var(--text-muted)]">
+          <ShoppingBag className="h-5 w-5" aria-hidden="true" />
+        </span>
+        <h3 className="mt-4 font-serif text-xl font-semibold text-[var(--text-primary)]">
+          Your bag is empty
+        </h3>
+        <p className="mt-1.5 max-w-xs text-sm text-[var(--text-secondary)]">
+          Tap <strong>ADD</strong> on any salad bowl from the menu to start your
+          order.
+        </p>
+        {onClose && (
+          <Button
+            variant="primary"
+            size="md"
+            onClick={onClose}
+            className="mt-5"
+          >
+            Browse Salads
+          </Button>
+        )}
+      </div>
+    );
+  }
+
   return (
     <form
       onSubmit={handleSubmitOrder}
       noValidate
       className="min-w-0 max-w-full space-y-5"
     >
-      {/* Cart Selection */}
+      {/* Cart Selection — only items added */}
       <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/65 p-4">
         <div className="flex items-center justify-between gap-2">
           <p className="text-sm font-semibold text-[var(--text-primary)]">
-            Your Bowl Selection
+            Your Bowl Selection ({lines.length})
           </p>
-          {lines.length > 0 && (
-            <button
-              type="button"
-              onClick={onClearCart}
-              className="inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--danger)]"
-            >
-              <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-              Clear all
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={onClearCart}
+            className="inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--danger)]"
+          >
+            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+            Clear all
+          </button>
         </div>
 
         <ul className="mt-3 divide-y divide-[var(--border-subtle)]">
-          {menu
-            .filter((m) => m.isAvailable)
-            .map((item) => {
-              const qty = quantities[item.id] ?? 0;
-              return (
-                <li
-                  key={item.id}
-                  className="flex items-center justify-between gap-3 py-2.5 first:pt-1 last:pb-1"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-[var(--text-primary)]">
-                      <span className="text-[var(--accent-primary)]">
-                        {item.itemNumber}
-                      </span>{" "}
-                      · {item.title}
-                    </p>
-                    <p className="text-xs text-[var(--text-muted)]">
-                      {formatPrice(item.priceCents)} each
-                    </p>
-                  </div>
+          {lines.map(({ item, quantity, lineTotalCents }) => (
+            <li
+              key={item.id}
+              className="flex items-center justify-between gap-3 py-2.5 first:pt-1 last:pb-1"
+            >
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-[var(--text-primary)]">
+                  <span className="text-[var(--accent-primary)]">
+                    {item.itemNumber}
+                  </span>{" "}
+                  · {item.title}
+                </p>
+                <p className="text-xs text-[var(--text-muted)]">
+                  {formatPrice(item.priceCents)} each ·{" "}
+                  <span className="font-semibold text-[var(--text-primary)]">
+                    {formatPrice(lineTotalCents)}
+                  </span>
+                </p>
+              </div>
 
-                  <div className="flex shrink-0 items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => onDecrement(item.id)}
-                      disabled={qty === 0}
-                      aria-label={`Decrease quantity for ${item.title}`}
-                      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[var(--border-strong)] bg-[var(--bg-surface)] text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-elevated)] disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      <Minus className="h-3.5 w-3.5" aria-hidden="true" />
-                    </button>
-                    <span className="min-w-6 text-center text-sm font-bold text-[var(--text-primary)]">
-                      {qty}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => onIncrement(item.id)}
-                      aria-label={`Increase quantity for ${item.title}`}
-                      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[var(--accent-primary)] text-white transition-colors hover:bg-[var(--accent-primary-hover)]"
-                    >
-                      <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
+              <div className="flex shrink-0 items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => onDecrement(item.id)}
+                  aria-label={`Decrease quantity for ${item.title}`}
+                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[var(--border-strong)] bg-[var(--bg-surface)] text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-elevated)]"
+                >
+                  <Minus className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+                <span className="min-w-6 text-center text-sm font-bold text-[var(--text-primary)]">
+                  {quantity}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onIncrement(item.id)}
+                  aria-label={`Increase quantity for ${item.title}`}
+                  className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-[var(--accent-primary)] text-white transition-colors hover:bg-[var(--accent-primary-hover)]"
+                >
+                  <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              </div>
+            </li>
+          ))}
         </ul>
 
         <div className="mt-3 flex items-center justify-between border-t border-[var(--border-subtle)] pt-3">
