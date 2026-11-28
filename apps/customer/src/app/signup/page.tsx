@@ -138,7 +138,7 @@ export default function SignupPage() {
         try {
           recaptchaVerifierRef.current.clear();
         } catch {
-          // Ignore
+          // Ignore cleanup errors
         }
         recaptchaVerifierRef.current = null;
       }
@@ -146,7 +146,7 @@ export default function SignupPage() {
       const verifier = new RecaptchaVerifier(
         firebaseAuth,
         recaptchaContainerRef.current,
-        { size: "normal" },
+        { size: "invisible" },
       );
       recaptchaVerifierRef.current = verifier;
 
@@ -154,6 +154,13 @@ export default function SignupPage() {
       setConfirmationResult(result);
       setStep("otp");
     } catch (err) {
+      try {
+        recaptchaVerifierRef.current?.clear();
+      } catch {
+        // Ignore
+      }
+      recaptchaVerifierRef.current = null;
+
       const code =
         typeof err === "object" && err !== null && "code" in err
           ? String((err as { code: unknown }).code)
@@ -161,14 +168,26 @@ export default function SignupPage() {
       if (code === "auth/invalid-phone-number") {
         setErrorMessage("Please enter a valid mobile number with country code.");
       } else if (code === "auth/too-many-requests") {
-        setErrorMessage("Too many OTP attempts. Please wait a bit and retry.");
+        setErrorMessage("Too many OTP attempts. Please wait a few minutes and retry.");
+      } else if (code === "auth/quota-exceeded") {
+        setErrorMessage(
+          "Daily free SMS quota reached. Try again tomorrow or add a Blaze billing account.",
+        );
+      } else if (code === "auth/billing-not-enabled") {
+        setErrorMessage(
+          "Firebase requires a Blaze billing account to send real SMS in this region (or use a Test Phone Number in Firebase Console).",
+        );
+      } else if (code === "auth/unauthorized-domain") {
+        setErrorMessage(
+          "This domain is not authorized in Firebase Console → Authentication → Settings → Authorized domains.",
+        );
       } else if (code === "auth/operation-not-allowed") {
         setErrorMessage(
-          "Phone authentication is not enabled in Firebase Console yet.",
+          "Phone SMS is blocked by Firebase SMS region policy or plan. Check Authentication → Settings → SMS region policy.",
         );
       } else {
         setErrorMessage(
-          "Could not send OTP. Complete the reCAPTCHA check and try again.",
+          `Could not send OTP${code ? ` (${code})` : ""}. Please refresh and try again.`,
         );
       }
     } finally {
@@ -253,7 +272,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-canvas)] pb-24 md:pb-12">
+    <div className="min-h-screen bg-[var(--bg-canvas)] pb-28 md:pb-12">
       <Navbar />
       <main id="main-content" className="py-6 sm:py-14">
         <Container className="max-w-2xl">
@@ -429,12 +448,7 @@ export default function SignupPage() {
                   />
                 </div>
 
-                <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-elevated)]/60 p-4">
-                  <p className="mb-2 text-xs font-medium text-[var(--text-secondary)]">
-                    Complete verification below before sending OTP:
-                  </p>
-                  <div ref={recaptchaContainerRef} />
-                </div>
+                <div ref={recaptchaContainerRef} />
 
                 {errorMessage && (
                   <p

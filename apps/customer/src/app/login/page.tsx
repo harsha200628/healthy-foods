@@ -127,15 +127,27 @@ export default function LoginPage() {
       const verifier = new RecaptchaVerifier(
         firebaseAuth,
         resetRecaptchaRef.current,
-        { size: "normal" },
+        { size: "invisible" },
       );
       resetVerifierRef.current = verifier;
       const e164 = toE164Phone(countryCode, digits);
       const result = await signInWithPhoneNumber(firebaseAuth, e164, verifier);
       setResetConfirmation(result);
       setResetMessage(`OTP sent to ${e164}. Enter OTP and your new password.`);
-    } catch {
-      setErrorMessage("Could not send reset OTP. Complete reCAPTCHA and retry.");
+    } catch (err) {
+      try {
+        resetVerifierRef.current?.clear();
+      } catch {
+        // Ignore
+      }
+      resetVerifierRef.current = null;
+      const code =
+        typeof err === "object" && err !== null && "code" in err
+          ? String((err as { code: unknown }).code)
+          : "";
+      setErrorMessage(
+        `Could not send reset OTP${code ? ` (${code})` : ""}. Please retry.`,
+      );
     } finally {
       setLoading(false);
     }
