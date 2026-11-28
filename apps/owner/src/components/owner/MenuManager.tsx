@@ -664,56 +664,38 @@ export function MenuManager() {
         </form>
       )}
 
-      {/* Existing Menu Items Grid */}
+      {/* Existing Menu Items Grid — compact 2-col on mobile like food app */}
       {loading ? (
-        <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-8 text-sm text-[var(--text-muted)]">
+        <div className="rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 text-sm text-[var(--text-muted)]">
           Loading menu items...
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
           {items.map((item) => (
             <article
               key={item.id}
-              className="flex flex-col overflow-hidden rounded-3xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] shadow-[var(--shadow-card)]"
+              className="flex flex-col justify-between overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-2 shadow-2xs sm:p-3"
             >
-              <div className="relative aspect-[16/10] w-full bg-[var(--bg-elevated)]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={resolveOwnerAssetUrl(item.imageUrl)}
-                  alt={item.title}
-                  className={`h-full w-full object-cover ${
-                    !item.isAvailable ? "opacity-55 grayscale-[30%]" : ""
-                  }`}
-                />
-                <span className="absolute left-3.5 top-3.5 rounded-full bg-white/95 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] shadow-xs">
-                  {item.itemNumber}
-                </span>
-              </div>
-
-              <div className="flex flex-1 flex-col p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="font-serif text-xl font-semibold text-[var(--text-primary)]">
-                      {item.title}
-                    </h3>
-                    <p className="text-xs text-[var(--accent-primary)]">
-                      {item.tagline}
-                    </p>
-                  </div>
-                  <p className="font-serif text-xl font-bold text-[var(--text-primary)]">
-                    {formatPrice(item.priceCents)}
-                  </p>
+              <div>
+                <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-[var(--bg-elevated)]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={resolveOwnerAssetUrl(item.imageUrl)}
+                    alt={item.title}
+                    className={`h-full w-full object-cover ${
+                      !item.isAvailable ? "opacity-55 grayscale-[30%]" : ""
+                    }`}
+                  />
+                  <span className="absolute left-1.5 top-1.5 rounded-md bg-white/95 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--text-primary)] shadow-2xs">
+                    {item.itemNumber}
+                  </span>
                 </div>
 
-                <p className="mt-2.5 flex-1 text-sm text-[var(--text-secondary)]">
-                  {item.description}
-                </p>
-
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-[var(--border-subtle)] pt-4">
+                <div className="mt-2 flex items-center justify-between gap-1">
                   <button
                     type="button"
                     onClick={() => void handleToggleAvailability(item)}
-                    className={`min-h-9 cursor-pointer rounded-full border px-3.5 text-xs font-semibold ${
+                    className={`cursor-pointer rounded-full border px-2 py-0.5 text-[10px] font-bold ${
                       item.isAvailable
                         ? "border-[#b7dfc3] bg-[var(--bg-accent-soft)] text-[var(--accent-primary)]"
                         : "border-[#fecaca] bg-[#fef2f2] text-[var(--danger)]"
@@ -721,8 +703,36 @@ export function MenuManager() {
                   >
                     {item.isAvailable ? "In Stock" : "Sold Out"}
                   </button>
+                  <span className="text-xs font-extrabold text-[var(--text-primary)] sm:text-sm">
+                    {formatPrice(item.priceCents)}
+                  </span>
+                </div>
 
-                  <div className="flex items-center gap-2">
+                <h3 className="mt-1.5 line-clamp-2 min-h-[2.25rem] text-[13px] font-bold leading-snug text-[var(--text-primary)] sm:text-sm">
+                  {item.title}
+                </h3>
+              </div>
+
+              <div className="mt-2.5 border-t border-[var(--border-subtle)] pt-2">
+                {confirmDeleteId === item.id ? (
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => void handleDeleteItem(item.id)}
+                      className="min-h-8 cursor-pointer rounded-lg bg-[var(--danger)] px-2 text-[11px] font-bold text-white"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDeleteId(null)}
+                      className="min-h-8 cursor-pointer rounded-lg border border-[var(--border-strong)] px-2 text-[11px] font-bold"
+                    >
+                      Keep
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-1.5">
                     <button
                       type="button"
                       onClick={() => {
@@ -730,42 +740,23 @@ export function MenuManager() {
                         setEditingId(item.id);
                         setFormError(null);
                       }}
-                      className="inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border border-[var(--border-strong)] bg-white px-3.5 text-xs font-semibold hover:bg-[var(--bg-elevated)]"
+                      className="inline-flex min-h-8 cursor-pointer items-center justify-center gap-1 rounded-lg border border-[var(--border-strong)] bg-white px-2 text-[11px] font-bold hover:bg-[var(--bg-elevated)]"
                     >
-                      <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                      <Pencil className="h-3 w-3" aria-hidden="true" />
                       Edit
                     </button>
 
-                    {confirmDeleteId === item.id ? (
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => void handleDeleteItem(item.id)}
-                          className="min-h-9 cursor-pointer rounded-full bg-[var(--danger)] px-3 text-xs font-semibold text-white"
-                        >
-                          Confirm Delete
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setConfirmDeleteId(null)}
-                          className="min-h-9 cursor-pointer rounded-full border border-[var(--border-strong)] px-3 text-xs font-semibold"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setConfirmDeleteId(item.id)}
-                        aria-label={`Delete ${item.title}`}
-                        className="inline-flex min-h-9 cursor-pointer items-center gap-1 rounded-full border border-[#fecaca] bg-[#fef2f2] px-3 text-xs font-semibold text-[var(--danger)] hover:bg-[#fee2e2]"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-                        Delete
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDeleteId(item.id)}
+                      aria-label={`Delete ${item.title}`}
+                      className="inline-flex min-h-8 cursor-pointer items-center justify-center gap-1 rounded-lg border border-[#fecaca] bg-[#fef2f2] px-2 text-[11px] font-bold text-[var(--danger)] hover:bg-[#fee2e2]"
+                    >
+                      <Trash2 className="h-3 w-3" aria-hidden="true" />
+                      Del
+                    </button>
                   </div>
-                </div>
+                )}
               </div>
             </article>
           ))}

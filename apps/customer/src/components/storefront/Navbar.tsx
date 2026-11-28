@@ -132,7 +132,7 @@ export function Navbar({
               <span
                 className={`inline-flex min-w-5 items-center justify-center rounded-full px-1.5 py-0.5 text-xs font-bold ${
                   totalItems > 0
-                    ? "bg-white/20 text-white"
+                    ? "bg-white text-[var(--accent-primary)]"
                     : "bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                 }`}
               >

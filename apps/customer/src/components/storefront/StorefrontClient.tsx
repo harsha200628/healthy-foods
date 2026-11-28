@@ -13,6 +13,7 @@ import type { MenuItem, StoreSettings } from "@/types/domain";
 import { Footer } from "@/components/storefront/Footer";
 import { HeroSection } from "@/components/storefront/HeroSection";
 import { HowItWorks } from "@/components/storefront/HowItWorks";
+import { ItemDetailSheet } from "@/components/storefront/ItemDetailSheet";
 import { MenuShowcase } from "@/components/storefront/MenuShowcase";
 import { MobileTabBar } from "@/components/storefront/MobileTabBar";
 import { Navbar } from "@/components/storefront/Navbar";
@@ -27,6 +28,7 @@ export function StorefrontClient() {
   const [settings, setSettings] = useState<StoreSettings>(DEFAULT_STORE_SETTINGS);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 
   useEffect(() => {
     try {
@@ -175,8 +177,8 @@ export function StorefrontClient() {
           quantities={quantities}
           onIncrement={handleIncrement}
           onDecrement={handleDecrement}
+          onSelectItem={setSelectedItem}
         />
-        <HowItWorks settings={settings} />
         <OrderSection
           menu={menu}
           isKitchenOpen={settings.isKitchenOpen}
@@ -185,37 +187,47 @@ export function StorefrontClient() {
           onDecrement={handleDecrement}
           onClearCart={handleClearCart}
         />
+        <HowItWorks settings={settings} />
       </main>
 
       <Footer settings={settings} />
 
-      {/* Sticky mobile floating bag bar above bottom tab bar */}
-      {totalItems > 0 && !isDrawerOpen && (
+      {/* Sticky mobile floating cart pill above bottom tab bar */}
+      {totalItems > 0 && !isDrawerOpen && !selectedItem && (
         <div className="fixed inset-x-3 bottom-[76px] z-30 md:hidden">
           <button
             type="button"
             onClick={() => setIsDrawerOpen(true)}
-            className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-2xl bg-[var(--accent-primary)] px-4 py-3.5 text-white shadow-xl ring-1 ring-white/20 active:scale-[0.99]"
+            className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-2xl bg-[var(--accent-primary)] px-4 py-3 text-white shadow-xl ring-1 ring-white/20 active:scale-[0.99]"
           >
-            <span className="inline-flex items-center gap-2.5 text-sm font-semibold">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-xs font-bold">
+            <span className="inline-flex items-center gap-2 text-xs font-bold">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-xs">
                 {totalItems}
               </span>
               <span>
-                {totalItems === 1 ? "1 bowl" : `${totalItems} bowls`} ·{" "}
+                {totalItems === 1 ? "1 Item" : `${totalItems} Items`} |{" "}
                 {formatPrice(totalCents)}
               </span>
             </span>
-            <span className="inline-flex items-center gap-1 text-sm font-bold">
+            <span className="inline-flex items-center gap-1 text-xs font-extrabold uppercase tracking-wide">
               <ShoppingBag className="h-4 w-4" aria-hidden="true" />
               <span>View Bag</span>
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
             </span>
           </button>
         </div>
       )}
 
       <MobileTabBar />
+
+      <ItemDetailSheet
+        item={selectedItem}
+        quantity={selectedItem ? (quantities[selectedItem.id] ?? 0) : 0}
+        isKitchenOpen={settings.isKitchenOpen}
+        onClose={() => setSelectedItem(null)}
+        onIncrement={handleIncrement}
+        onDecrement={handleDecrement}
+      />
 
       <OrderDrawer
         isOpen={isDrawerOpen}
